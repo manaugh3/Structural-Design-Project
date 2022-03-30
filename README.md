@@ -1,4 +1,4 @@
-# Structural-Engineering-Project
+# Structural-Engineering
 
 ### Contributors (CEE Primary Specialization, Minor or CEE Secondary): 
 - Louis Sungwoo Cho (CEE Transportation Engineering, CS Minor)
