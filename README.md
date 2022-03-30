@@ -1,3 +1,7 @@
 # Structural-Engineering-Project
 
-### Contributors: Louis Sungwoo Cho, Benjamin Manaugh, Hansae Cho, Hannah Ann
+### Contributors (CEE Primary Specialization, Minor or CEE Secondary): 
+### Louis Sungwoo Cho (CEE Transportation Engineering, CS Minor)
+### Benjamin Manaugh (CEE Structural Engineering, CEE Geotechnical Engineering)
+### Hansae Cho (CEE Transportation Engineering, CEE Structural Engineering)
+### Hannah Ann (CEE Societal Risk and Hazardous Management, CEE Construction Management Engineering)
