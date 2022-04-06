@@ -6,7 +6,7 @@ P = 1
 L = 30
 
 %We are going to solve the reaction forces at node 1 and 5 respectively
-eqn1 = r1 + r5 - P == 0  %sigma Fy is 0
+eqn1 = r1 + r5 - 3*P == 0  %sigma Fy is 0
 eqn2 = -2*L*P + 4*L*r5 == 0 %Sigma M at node 1 is 0
 
 sol = solve([eqn1,eqn2],[r1,r5]); %Solve the equation
@@ -25,28 +25,24 @@ F16 = -R1/sin(theta) %compression
 F12 = -F16*cos(theta) %Tension
 
 %Joint 2
-syms f12 f23 
-P = 12
-L = 30
 
 %We are going to solve the reaction forces at node 1 and 5 respectively
 F23 = F12 %Tension
-F26 = 12 %Tension
-
+F26 = 0 %Tension
 
 %Joint 5
 F58 = -R5/sin(theta) %Compression
 F54 = -F58*cos(theta) %Tension
 
 %Joint 4
-F48 = 12
+F48 = 0
 F34 = F54
 
 %Joint 3
 F37 = 0
 syms F36 F38
 eqn1 = F23+F36*cos(theta) == F38*cos(theta) + F34
-eqn2 = F36*sin(theta) + F37 + F38*sin(theta) == 12
+eqn2 = F36*sin(theta) + F37 + F38*sin(theta) == P
 sol = solve([eqn1,eqn2],[F36,F38]); %Solve the equation
 
 F36 = double(sol.F36) %Store as F36
@@ -59,8 +55,6 @@ F67 = F16*cos(theta)- F36*cos(theta)
 %Joint 7
 F78 = F67 %because member 37 is zero force member
 
-%Joint 8
-F48 = -sin(theta) * (F38+F58)
 
 
 
