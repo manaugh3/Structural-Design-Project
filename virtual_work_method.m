@@ -6,7 +6,7 @@ P = 1
 L = 30
 
 %We are going to solve the reaction forces at node 1 and 5 respectively
-eqn1 = r1 + r5 - 3*P == 0  %sigma Fy is 0
+eqn1 = r1 + r5 - P == 0  %sigma Fy is 0
 eqn2 = -2*L*P + 4*L*r5 == 0 %Sigma M at node 1 is 0
 
 sol = solve([eqn1,eqn2],[r1,r5]); %Solve the equation
@@ -39,7 +39,7 @@ F48 = 0
 F34 = F54
 
 %Joint 3
-F37 = 0
+F37 = P
 syms F36 F38
 eqn1 = F23+F36*cos(theta) == F38*cos(theta) + F34
 eqn2 = F36*sin(theta) + F37 + F38*sin(theta) == P
