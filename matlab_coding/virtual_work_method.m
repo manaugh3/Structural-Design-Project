@@ -6,7 +6,7 @@ P = 1
 L = 30
 
 %We are going to solve the reaction forces at node 1 and 5 respectively
-eqn1 = r1 + r5 - 3*P == 0  %sigma Fy is 0
+eqn1 = r1 + r5 - P == 0  %sigma Fy is 0
 eqn2 = - 2*L*P + 4*L*r5 == 0 %Sigma M at node 1 is 0
 
 sol = solve([eqn1,eqn2],[r1,r5]); %Solve the equation
