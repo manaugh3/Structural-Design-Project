@@ -1,53 +1,151 @@
-%Truss Analysis for the bridge
+%Truss analysis by matrix analysis
 
-%First let's determine the reaction forces at 1 and 5
-syms r1 r5 
-P = 12
-L = 30
+%Identify given variables
+P = 12 %k
+L = 30 %feet
+A = 31.1 %inch
+E = 29000 %ksi
+theta = 45 %degrees
+%Member lengths
 
-%We are going to solve the reaction forces at node 1 and 5 respectively
-eqn1 = r1 + r5 - 3*P == 0  %sigma Fy is 0
-eqn2 = -L*P - 2*L*P - 3*L*P + 4*L*r5 == 0 %Sigma M at node 1 is 0
+L_hv = L %horizontal/vertical member
 
-sol = solve([eqn1,eqn2],[r1,r5]); %Solve the equation
-
-R1 = double(sol.r1) %Store the reaction force at node 1
-R5 = double(sol.r5) %Store the reaction force at node 5
+L_d = L/sind(theta) %diagonal member
 
 
-%Now we are going to solve for Joint 1
+%Assemble truss element K - matrices
+%member number followed by near end (y,x) and far end (y,x)
 
-%Memeber 37 is a zero force member so F37 is 0 k
-theta = 45 %because width is L and height is also L
+%member 12 N: 16  15  F: 2  1
+lam_x=L/L_hv
+lam_y=0
+k12 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
 
-syms f12 f16 f26 f23 f63 f67 f34 f38 f37 f78 f48 f45 f85
-eqn1 = f12 + f16*cos(theta) == 0
-eqn2 = f16*sin(theta)+R1 == 0
-eqn3 = -f12+f23 ==0
-eqn4 = f26 == P
-eqn5 = -f16*cos(theta)+f67+f63*cos(theta) == 0
-eqn6 = -f16*sin(theta)-f26-f63*sin(theta) == 0
-eqn7 = -f67+f78 == 0
-eqn8 = f37 == 0
-eqn9 = -f23-f63*cos(theta)+f38*cos(theta)+f34 == 0
-eqn10 = f63*sin(theta) + f37 + f38*sin(theta) == P
-eqn11 = -f45-f85*cos(theta) == 0
-eqn12 = f85*sin(theta) == -R5
-eqn13 = f48-P == 0
+%member 16 N: 16  15  F: 8  7
+lam_x= L/L_d
+lam_y = L/L_d
+k16 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
 
-sol = solve([eqn1,eqn2,eqn3,eqn4,eqn5,eqn6,eqn7,eqn8,eqn9,eqn10,eqn11,eqn12,eqn13],[f12, f16, f26, f23, f63, f67, f34, f38, f37, f78, f48, f45, f85]); %Solve the equation
+%member 26 N: 2  1  F: 8  7
+lam_x = 0
+lam_y = L/L_hv
+k26 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
 
-F12 = double(sol.f12)
-F16 = double(sol.f16)
-F26 = double(sol.f26)
-F23 = double(sol.f23)
-F63 = double(sol.f63)
-F67 = double(sol.f67)
-F34 = double(sol.f34)
-F38 = double(sol.f38)
-F37 = double(sol.f37)
-F78 = double(sol.f78)
-F48 = double(sol.f48)
-F45 = double(sol.f45)
-F85 = double(sol.f85)
+%member 23 N: 2  1  F: 4  3
+lam_x = L/L_hv
+lam_y = 0
+k23 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
 
+%member 36 N: 8  7  F: 4  3
+lam_x = L/L_d
+lam_y = -L/L_d
+k36 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
+
+%member 37 N: 4  3  F: 10  9
+lam_x = 0
+lam_y = L/L_hv
+k37 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
+
+%member 38 N: 4  3  F: 12  11
+lam_x = L/L_d
+lam_y = L/L_d
+k38 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
+
+%member 34 N: 4  3  F: 6  5
+lam_x = L/L_hv
+lam_y = 0
+k34 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
+
+%member 48 N: 6  5  F: 12  11
+lam_x = 0
+lam_y = L/L_hv
+k48 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
+
+%member 45 N: 6  5  F: 14  13
+lam_x = L/L_hv
+lam_y = 0
+k45 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
+
+%member 58 N: 12  11  F: 14  13
+lam_x= L/L_d
+lam_y= -L/L_d
+k58 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
+
+%member 67 N: 8  7  F: 10  9
+lam_x = L/L_hv
+lam_y = 0
+k67 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
+
+%member 78 N: 10  9  F: 12  11
+lam_x = L/L_hv
+lam_y = 0
+k78 = [lam_x^2,lam_x*lam_y,-lam_x^2,-lam_x*lam_y;lam_x*lam_y,lam_y^2,-lam_x*lam_y,-lam_y^2;-lam_x^2,-lam_x*lam_y,lam_x^2,lam_x*lam_y;-lam_x*lam_y,-lam_y^2,lam_x*lam_y,lam_y^2]
+
+
+%Assemble global stiffness matrix
+
+%initialize global matrix
+N=16; %degrees of freedom
+K=zeros(N,N); %initialization
+
+%Add k-matrix into the 16 x 16 matrix
+
+%member 12 N: 16  15  F: 2  1
+K([16 15 2 1],[16 15 2 1]) = K([16 15 2 1],[16 15 2 1])+k12;
+
+%member 16 N: 16  15  F: 8  7
+K([16 15 8 7],[16 15 8 7]) = K([16 15 8 7],[16 15 8 7])+k16;
+
+%member 26 N: 2  1  F: 8  7
+K([2 1 8 7],[2 1 8 7]) = K([2 1 8 7],[2 1 8 7])+k26;
+
+%member 23 N: 2  1  F: 4  3
+K([2 1 4 3],[2 1 4 3]) = K([2 1 4 3],[2 1 4 3])+k23;
+
+%member 36 N: 8  7  F: 4  3
+K([8 7 4 3],[8 7 4 3]) = K([8 7 4 3],[8 7 4 3])+k36;
+
+%member 37 N: 4  3  F: 10  9
+K([4 3 10 9],[4 3 10 9]) = K([4 3 10 9],[4 3 10 9])+k37;
+
+%member 38 N: 4  3  F: 12  11
+K([4 3 12 11],[4 3 12 11]) = K([4 3 12 11],[4 3 12 11])+k38;
+
+%member 34 N: 4  3  F: 6  5
+K([4 3 6 5],[4 3 6 5]) = K([4 3 6 5],[4 3 6 5])+k34;
+
+%member 48 N: 6  5  F: 12  11
+K([6 5 12 11],[6 5 12 11]) = K([6 5 12 11],[6 5 12 11])+k48;
+
+%member 45 N: 6  5  F: 14  13
+K([6 5 14 13],[6 5 14 13]) = K([6 5 14 13],[6 5 14 13])+k45;
+
+%member 58 N: 12  11  F: 14  13
+K([12 11 14 13],[12 11 14 13]) = K([12 11 14 13],[12 11 14 13])+k58;
+
+%member 67 N: 8  7  F: 10  9
+K([8 7 10 9],[8 7 10 9]) = K([8 7 10 9],[8 7 10 9])+k67;
+
+%member 78 N: 10  9  F: 12  11
+K([10 9 12 11],[10 9 12 11]) = K([10 9 12 11],[10 9 12 11])+k78;
+
+%Assemble the known and unknown external load and displacement vectors
+
+%known external force vector (1 through 13)
+Qk = [0;-12;0;-12;0;-12;0;0;0;0;0;0;0]
+
+%solve for unknown displacements
+Du = (1/(A*E))*K([1:13],[1:13])^-1*Qk
+
+%known displacements
+Dk = [0;0;0]
+
+%unknown forces
+Qu = A*E*K([14:16],[1:13])*Du
+
+%member forces
+%member 12
+%lam_x=L/L1
+%lam_y=0
+%q=A*E/L1*[1 -1;-1 1]*[lam_x lam_y 0 0;0 0 lam_x lam_y]*[0;0;Du([1],[1]);Du([2],[1])]
+%q
